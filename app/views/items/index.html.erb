@@ -14,6 +14,8 @@
 
 <div class="cart four columns">
   <h2>Cart! :D :) :></h2>
+  <ul class="cart-itemz">
+  </ul>
 </div>
 
 </div>
@@ -31,13 +33,28 @@
         $.getJSON(
           "/cart_items.json",
           function(data){
-            $('.cart').empty();
-            $(data).each(function() {         // need to finish this
-              // need to finish this section
+            var total = 0;
+            $('.cart-itemz').empty();
+            $.each(data, function(i, datum) {
+              var name = datum['item']['name'];
+              var price = parseInt(datum['item']['price'])/100;
+              var quantity = parseInt(datum['quantity']);
+              var subtotal = price*quantity;
+              total += subtotal;
+              var itemId = datum['item_id'];
+
+              $('.cart-itemz')
+                      .append('<li data-item-id=' + itemId + '>' + name + '<br>'
+                      + 'Price: $' + price + '<br>'
+                      + 'Quantity: ' + quantity + '<br>'
+                      + 'Subtotal: $' + subtotal + '</li>')
             })
+            $('.cart-itemz').append('<br><br>Total: $' + total)
           }
         )
       })
     })
+
+
   })
 </script>

@@ -16,11 +16,21 @@ class CartItemsController < ApplicationController
   end
 
   def index
-    @cart_items = current_user.cart_items
-    # need to start here
+    @cart_items = current_user.cart_items.includes(:item).all
 
     respond_to do |format|
-      format.json { render :json => @cart_items}
+      format.json { render :json => @cart_items.to_json(:include => :item)}
+    end
+  end
+
+  def destroy
+    @cart_item = CartItem.find(params[:id])
+    @cart_item.destroy
+    @cart_items = current_user.cart_items.includes(:item).all
+
+
+    respond_to do |format|
+      format.json { render :json => @cart_items.to_json(:include => :item)}
     end
   end
 end
