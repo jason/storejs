@@ -12,3 +12,28 @@
  *= require foundation_and_overrides
  *= require_tree .
  */
+.carousel {
+  width: 800px;
+  height: 800px;
+  overflow: hidden;
+  position: relative;
+  ul {
+  height: 800px;
+  width: 6400px;
+  position: absolute;
+  top: 0;
+  left: 0;
+    li {
+    width: 800px;
+    height: 500px;
+    float: left;
+    }
+  }
+}
+ul {
+  list-style-type: none;
+}
+
+button {
+  top: 0px;
+}

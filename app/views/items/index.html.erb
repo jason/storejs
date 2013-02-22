@@ -1,16 +1,23 @@
 <h1>The AJAX Cart!! :D!!!</h1>
 
 <div class="row">
-  <div class = "eight columns">
-  <ul>
-  <% @items.each do |item| %>
-    <li>Name: <%= item.name %></li>
-    Price: $<%= item.price / 100 %>
-    <br>
-    <a href="#" class="add-item button round" data-item-id="<%=item.id%>">Add to Cart :D</a>
-  <% end %>
-  </ul>
+  <div class="eight columns">
+    <div class="carousel">
+      <ul class="item-ribbon">
+        <% @items.each do |item| %>
+          <li>Name: <%= item.name %>
+            Price: $<%= item.price / 100 %>
+            <br>
+            <%= image_tag(item.image, :size => "300x200") %>
+            <a href="#" class="add-item button round" data-item-id="<%=item.id%>">Add to Cart :D</a>
+          </li>
+        <% end %>
+      </ul>
+    </div>
 </div>
+
+<button id="next">next</button>
+<button id="back">back</button>
 
 <div class="cart four columns">
   <h2>Cart! :D :) :></h2>
@@ -22,39 +29,92 @@
 
 <script type="text/javascript">
   $(function() {
-    $('a').click(function() {
-      item_id = parseInt($(this).attr('data-item-id'));
 
-      $.post("cart_items.json", {
-        cart_item: {
-          item_id: item_id
-        }
-      }, function(response) {
-        $.getJSON(
-          "/cart_items.json",
-          function(data){
-            var total = 0;
-            $('.cart-itemz').empty();
-            $.each(data, function(i, datum) {
-              var name = datum['item']['name'];
-              var price = parseInt(datum['item']['price'])/100;
-              var quantity = parseInt(datum['quantity']);
-              var subtotal = price*quantity;
-              total += subtotal;
-              var itemId = datum['item_id'];
+    var addToCartListener = function (callback){
+        $('a.add-item').click(function() {
+        item_id = parseInt($(this).attr('data-item-id'));
 
-              $('.cart-itemz')
-                      .append('<li data-item-id=' + itemId + '>' + name + '<br>'
-                      + 'Price: $' + price + '<br>'
-                      + 'Quantity: ' + quantity + '<br>'
-                      + 'Subtotal: $' + subtotal + '</li>')
-            })
-            $('.cart-itemz').append('<br><br>Total: $' + total)
+        $.post("cart_items.json", {
+          cart_item: {
+            item_id: item_id
           }
-        )
+        }, function(response){
+          callback(response);
+        })
       })
-    })
+    };
+
+    var removeFromCartListener = function (callback){
+      $('ul').on('click', 'span.delete-item', function() {
+        path = $(this).attr("data-action");
+        itemId = $(this).attr("data-item-id");
+
+        console.log(path);
+        console.log(itemId);
+
+        $.post(
+          path,
+          {
+            '_method': "delete"
+          }, function(response) {
+          callback(response);
+          console.log("i am here");
+        })
+      })
+    };
+
+    var cartItemHandler = function(response) {
+      $.getJSON(
+        "/cart_items.json",
+        function(data){
+          var total = 0;
+          $('.cart-itemz').empty();
+          $.each(data, function(i, datum) {
+            var name = datum['item']['name'];
+            var price = parseInt(datum['item']['price'])/100;
+            var quantity = parseInt(datum['quantity']);
+            var subtotal = price*quantity;
+            total += subtotal;
+            var itemId = datum['item_id'];
+            var cartItemId = datum['id'];
+
+            $('.cart-itemz')
+                    .append('<li data-item-id=' + itemId + '>' + name + '<br>'
+                    + 'Price: $' + price + '<br>'
+                    + 'Quantity: ' + quantity + '<br>'
+                    + 'Subtotal: $' + subtotal + '<br>'
+                    + '<span class="delete-item round button" data-item-id="' + itemId
+                    + '" data-action="/cart_items/' + cartItemId + '">X</span>'
+                    + '<br></li>')
+          })
+          $('.cart-itemz').append('<br><br>Total: $' + total)
+        }
+      )
+    };
+
+    n = 1
+
+    var runCarousel = function() {
+
+      timerId = setInterval(function() {
+        if (n > 8) {
+          n = 1;
+        }
+        $('.item-ribbon').animate({left: (-1 * (n - 1) * 800)}, 1000);
+        n++;
+        }, 2000);
+    };
+
+    $('.item-ribbon').hover(function() {
+      clearInterval(timerId);
+      }, function() {
+        runCarousel();
+      });
 
 
+
+    addToCartListener(cartItemHandler);
+    removeFromCartListener(cartItemHandler);
+    runCarousel();
   })
 </script>
