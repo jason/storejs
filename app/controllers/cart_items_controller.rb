@@ -34,9 +34,7 @@ class CartItemsController < ApplicationController
   end
 
   def empty
-    current_user.cart_items.each do |cart_item|
-      cart_item.destroy
-    end
+    current_user.empty_cart
 
     @cart_items = current_user.cart_items
 

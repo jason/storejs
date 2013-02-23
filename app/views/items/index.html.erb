@@ -71,6 +71,18 @@
       });
     };
 
+    var checkOutListener = function (callback) {
+      $('ul').on('click', 'span.check-out', function () {
+        console.log("i am here");
+
+
+        $.post('/orders',
+          function(response) {
+            callback(response);
+          })
+      });
+    };
+
 
     var cartItemHandler = function(response) {
       $.getJSON(
@@ -98,6 +110,7 @@
           })
           $('.cart-itemz').append('<br><br><b>Total:</b> $' + total);
           $('.cart-itemz').append('<br><span class="empty-cart round button">Empty Cart</span>');
+          $('.cart-itemz').append('<br><span class="check-out round button">Check Out</span>');
         }
       )
     };
@@ -150,6 +163,7 @@
     addToCartListener(cartItemHandler);
     removeFromCartListener(cartItemHandler);
     emptyCartListener(cartItemHandler);
+    checkOutListener(cartItemHandler);
     cartItemHandler();
 
     runCarousel();
