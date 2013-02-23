@@ -27,10 +27,22 @@ class CartItemsController < ApplicationController
     @cart_item = CartItem.find(params[:id])
     @cart_item.destroy
     @cart_items = current_user.cart_items.includes(:item).all
-    p "i am here"
 
     respond_to do |format|
       format.json { render :json => @cart_items.to_json(:include => :item)}
     end
   end
+
+  def empty
+    current_user.cart_items.each do |cart_item|
+      cart_item.destroy
+    end
+
+    @cart_items = current_user.cart_items
+
+    respond_to do |format|
+      format.json { render :json => @cart_items.to_json(:include => :item)}
+    end
+  end
+
 end
